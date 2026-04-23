@@ -1,0 +1,15 @@
+{
+  "template": "/home/yaldizm/mex/mex-template",
+  "commit": "43f7153cb6e402a939c4054b9b72999788ba70c1",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "test",
+      "short_summary": "Test Repo",
+      "long_summary": "Explain your project in a bit more detail, 50-100 words would be ideal. Line-breaks are not needed as the text will be auto-wrapped.",
+      "_template": "/home/yaldizm/mex/mex-template",
+      "_commit": "43f7153cb6e402a939c4054b9b72999788ba70c1"
+    }
+  },
+  "directory": null
+}
