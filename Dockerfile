@@ -19,8 +19,8 @@ FROM python:3.14-slim
 LABEL org.opencontainers.image.authors="mex@rki.de"
 LABEL org.opencontainers.image.description="Test Repo"
 LABEL org.opencontainers.image.licenses="MIT"
-LABEL org.opencontainers.image.url="https://github.com/robert-koch-institut/mex-test"
-LABEL org.opencontainers.image.vendor="robert-koch-institut"
+LABEL org.opencontainers.image.url="https://github.com/mikamk4/mex-test"
+LABEL org.opencontainers.image.vendor="mikamk4"
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONOPTIMIZE=1

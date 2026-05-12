@@ -104,7 +104,7 @@ jobs:
 
       - name: Build, tag and push docker image
         env:
-          IMAGE: ghcr.io/${{ github.repository }}
+          IMAGE: ghcr.io/mikamk4/mex-test
           TAG: v0.1.0
         run: |
           docker build . \
