@@ -128,10 +128,12 @@ jobs:
             -a "ref=${GITHUB_REF}" \
             ${IMAGE}@${{ steps.push_step.outputs.digest }}
 
-          cosign tree ghcr.io/mikamk4/mex-test@${{ steps.push_step.outputs.digest }}
-
           # Verify signatures
           cosign verify --key env://COSIGN_PUBLIC_KEY ${IMAGE}@${{ steps.push_step.outputs.digest }}
+
+      - name: Verify upload
+        run: |
+          cosign tree ghcr.io/mikamk4/mex-test@${{ steps.push_step.outputs.digest }}
 
   # distribute:
   #   runs-on: ubuntu-latest
