@@ -103,15 +103,14 @@ jobs:
           password: ${{secrets.GITHUB_TOKEN}}
 
       - name: Build, tag and push docker image
-        env:
-          IMAGE: ghcr.io/mikamk4/mex-test
-          TAG: v0.1.0
-        run: |
-          docker build . \
-          --tag ${IMAGE}:latest \
-          --tag ${IMAGE}:${{ github.sha }} \
-          --tag ${IMAGE}:${TAG}
-          docker push --all-tags ${IMAGE}
+        id: push_step
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v.7.1.0
+        with:
+          push: true
+          tags: |
+            ghcr.io/mikamk4/mex-test:latest
+            ghcr.io/mikamk4/mex-test:${{ github.sha }}
+            ghcr.io/mikamk4/mex-test:v0.1.0
 
       - name: Install cosign
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
@@ -127,10 +126,10 @@ jobs:
             -a "repo=${GITHUB_REPOSITORY}" \
             -a "workflow=${GITHUB_WORKFLOW}" \
             -a "ref=${GITHUB_REF}" \
-            ${IMAGE}:${{ github.sha }}
+            ${IMAGE}@${{ steps.push_step.outputs.digest }}
 
           # Verify signatures
-          cosign verify --key env://COSIGN_PUBLIC_KEY ${IMAGE}:${{ github.sha }}
+          cosign verify --key env://COSIGN_PUBLIC_KEY ${IMAGE}@${{ steps.push_step.outputs.digest }}
 
   # distribute:
   #   runs-on: ubuntu-latest
