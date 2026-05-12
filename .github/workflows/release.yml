@@ -123,25 +123,14 @@ jobs:
           COSIGN_PASSWORD: ""
           COSIGN_PUBLIC_KEY: ${{ vars.MEX_SIGNING_PUB }}
         run: |
-          # Sign each tag separately and attach signatures to the registry
-          cosign sign --yes --key env://COSIGN_PRIVATE_KEY \
-            -a "repo=${GITHUB_REPOSITORY}" \
-            -a "workflow=${GITHUB_WORKFLOW}" \
-            -a "ref=${GITHUB_REF}" \
-            ${IMAGE}:latest
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY \
             -a "repo=${GITHUB_REPOSITORY}" \
             -a "workflow=${GITHUB_WORKFLOW}" \
             -a "ref=${GITHUB_REF}" \
             ${IMAGE}:${{ github.sha }}
-          cosign sign --yes --key env://COSIGN_PRIVATE_KEY \
-            -a "repo=${GITHUB_REPOSITORY}" \
-            -a "workflow=${GITHUB_WORKFLOW}" \
-            -a "ref=${GITHUB_REF}" \
-            ${IMAGE}:${TAG}
 
           # Verify signatures
-          cosign verify --key env://COSIGN_PUBLIC_KEY ${IMAGE}:${TAG}
+          cosign verify --key env://COSIGN_PUBLIC_KEY ${IMAGE}:${{ github.sha }}
 
   # distribute:
   #   runs-on: ubuntu-latest
