@@ -118,24 +118,24 @@ jobs:
 
       - name: Sign docker images
         env:
-          IMAGE: ghcr.io/${{ github.repository }}
+          IMAGE: ghcr.io/mikamk4/mex-test
           COSIGN_PRIVATE_KEY: ${{ secrets.MEX_SIGNING_KEY }}
           COSIGN_PASSWORD: ""
           COSIGN_PUBLIC_KEY: ${{ vars.MEX_SIGNING_PUB }}
         run: |
           # Sign each tag separately and attach signatures to the registry
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY \
-            -a "repo=ghcr.io/mikamk4/mex-test" \
+            -a "repo=${GITHUB_REPOSITORY}" \
             -a "workflow=${GITHUB_WORKFLOW}" \
             -a "ref=${GITHUB_REF}" \
             ${IMAGE}:latest
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY \
-            -a "repo=ghcr.io/mikamk4/mex-test" \
+            -a "repo=${GITHUB_REPOSITORY}" \
             -a "workflow=${GITHUB_WORKFLOW}" \
             -a "ref=${GITHUB_REF}" \
             ${IMAGE}:${{ github.sha }}
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY \
-            -a "repo=ghcr.io/mikamk4/mex-test" \
+            -a "repo=${GITHUB_REPOSITORY}" \
             -a "workflow=${GITHUB_WORKFLOW}" \
             -a "ref=${GITHUB_REF}" \
             ${IMAGE}:${TAG}
