@@ -122,14 +122,7 @@ jobs:
           COSIGN_PASSWORD: ""
           COSIGN_PUBLIC_KEY: ${{ vars.MEX_SIGNING_PUB }}
         run: |
-          cosign sign --yes --key env://COSIGN_PRIVATE_KEY \
-            -a "repo=${GITHUB_REPOSITORY}" \
-            -a "workflow=${GITHUB_WORKFLOW}" \
-            -a "ref=${GITHUB_REF}" \
-            ${IMAGE}@${{ steps.push_step.outputs.digest }}
-
-          # Verify signatures
-          cosign verify --key env://COSIGN_PUBLIC_KEY ${IMAGE}@${{ steps.push_step.outputs.digest }}
+          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${IMAGE}@${{ steps.push_step.outputs.digest }}
 
       - name: Verify upload
         run: |
