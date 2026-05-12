@@ -125,17 +125,17 @@ jobs:
         run: |
           # Sign each tag separately and attach signatures to the registry
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY \
-            -a "repo=${GITHUB_REPOSITORY}" \
+            -a "repo=ghcr.io/mikamk4/mex-test" \
             -a "workflow=${GITHUB_WORKFLOW}" \
             -a "ref=${GITHUB_REF}" \
             ${IMAGE}:latest
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY \
-            -a "repo=${GITHUB_REPOSITORY}" \
+            -a "repo=ghcr.io/mikamk4/mex-test" \
             -a "workflow=${GITHUB_WORKFLOW}" \
             -a "ref=${GITHUB_REF}" \
             ${IMAGE}:${{ github.sha }}
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY \
-            -a "repo=${GITHUB_REPOSITORY}" \
+            -a "repo=ghcr.io/mikamk4/mex-test" \
             -a "workflow=${GITHUB_WORKFLOW}" \
             -a "ref=${GITHUB_REF}" \
             ${IMAGE}:${TAG}
