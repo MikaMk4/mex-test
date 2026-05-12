@@ -85,6 +85,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write  # Required for cosign signing
 
     steps:
       - name: Checkout repo
@@ -133,6 +134,36 @@ jobs:
           --tag ${IMAGE}:${{ github.sha }} \
           --tag ${IMAGE}:${TAG}
           docker push --all-tags ${IMAGE}
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@61669229aa43e438fd42b48aa1aba56ee88cce6 # v3.7.0
+
+      - name: Sign docker images
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}
+          COSIGN_PRIVATE_KEY: ${{ secrets.MEX_SIGNING_KEY }}
+          COSIGN_PASSWORD: ""
+          COSIGN_PUBLIC_KEY: ${{ vars.MEX_SIGNING_PUB }}
+        run: |
+          # Sign each tag separately and attach signatures to the registry
+          cosign sign --yes --key env://COSIGN_PRIVATE_KEY \
+            -a "repo=${GITHUB_REPOSITORY}" \
+            -a "workflow=${GITHUB_WORKFLOW}" \
+            -a "ref=${GITHUB_REF}" \
+            ${IMAGE}:latest
+          cosign sign --yes --key env://COSIGN_PRIVATE_KEY \
+            -a "repo=${GITHUB_REPOSITORY}" \
+            -a "workflow=${GITHUB_WORKFLOW}" \
+            -a "ref=${GITHUB_REF}" \
+            ${IMAGE}:${{ github.sha }}
+          cosign sign --yes --key env://COSIGN_PRIVATE_KEY \
+            -a "repo=${GITHUB_REPOSITORY}" \
+            -a "workflow=${GITHUB_WORKFLOW}" \
+            -a "ref=${GITHUB_REF}" \
+            ${IMAGE}:${TAG}
+
+          # Verify signatures
+          cosign verify --key env://COSIGN_PUBLIC_KEY ${IMAGE}:${TAG}
 
   # distribute:
   #   runs-on: ubuntu-latest
