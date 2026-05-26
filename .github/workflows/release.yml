@@ -122,6 +122,7 @@ jobs:
           COSIGN_PRIVATE_KEY: ${{ secrets.MEX_SIGNING_KEY }}
           COSIGN_PASSWORD: ""
           COSIGN_PUBLIC_KEY: ${{ vars.MEX_SIGNING_PUB }}
+          COSIGN_EXPERIMENTAL: 1
         run: |
           echo "${COSIGN_PRIVATE_KEY}" > cosign.key
           cosign sign --yes --registry-referrers-mode=oci-1-1 --key cosign.key ${IMAGE}@${{ steps.push_step.outputs.digest }}
