@@ -122,11 +122,18 @@ jobs:
           COSIGN_PASSWORD: ""
           COSIGN_PUBLIC_KEY: ${{ vars.MEX_SIGNING_PUB }}
         run: |
-          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${IMAGE}@${{ steps.push_step.outputs.digest }}
+          echo "${COSIGN_PRIVATE_KEY}" > cosign.key
+          cosign sign --yes --key cosign.key ${IMAGE}@${{ steps.push_step.outputs.digest }}
+          rm cosign.key
 
       - name: Verify upload
+        env:
+          IMAGE: ghcr.io/mikamk4/mex-test
+          COSIGN_PUBLIC_KEY: ${{ vars.MEX_SIGNING_PUB }}
         run: |
-          cosign tree ghcr.io/mikamk4/mex-test@${{ steps.push_step.outputs.digest }}
+          echo "${COSIGN_PUBLIC_KEY}" > cosign.pub
+          cosign verify --key cosign.pub ${IMAGE}@${{ steps.push_step.outputs.digest }}
+          rm cosign.pub
 
   # distribute:
   #   runs-on: ubuntu-latest
