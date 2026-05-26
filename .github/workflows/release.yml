@@ -125,7 +125,7 @@ jobs:
           COSIGN_DOCKER_MEDIA_TYPE: 1
         run: |
           echo "${COSIGN_PRIVATE_KEY}" > cosign.key
-          cosign sign --yes --registry-referrers-mode=oci-1-1 --key cosign.key ${IMAGE}@${{ steps.push_step.outputs.digest }}
+          cosign sign --yes --key cosign.key ${IMAGE}@${{ steps.push_step.outputs.digest }}
           echo "Signature generated successfully"
           cosign tree ${IMAGE}@${{ steps.push_step.outputs.digest }}
           rm cosign.key
