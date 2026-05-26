@@ -136,7 +136,7 @@ jobs:
           COSIGN_PUBLIC_KEY: ${{ vars.MEX_SIGNING_PUB }}
         run: |
           echo "${COSIGN_PUBLIC_KEY}" > cosign.pub
-          cosign verify --key cosign.pub ${IMAGE}@${{ steps.push_step.outputs.digest }}
+          cosign verify --key cosign.pub -d ${IMAGE}@${{ steps.push_step.outputs.digest }}
           rm cosign.pub
 
   # distribute:
