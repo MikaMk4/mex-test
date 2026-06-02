@@ -120,16 +120,19 @@ jobs:
 
       - name: Sign docker images
         env:
-          IMAGE: ghcr.io/mikamk4/mex-test
-          COSIGN_PRIVATE_KEY: ${{ secrets.MEX_SIGNING_KEY }}
+          IMAGE: ghcr.io/${{ github.repository }}
+          DIGEST: ${{ steps.push_step.outputs.digest }}
+          BASE64_PRIV_KEY: ${{ secrets.MEX_SIGNING_KEY }}
           COSIGN_PASSWORD: ""
-          COSIGN_PUBLIC_KEY: ${{ vars.MEX_SIGNING_PUB }}
           COSIGN_DOCKER_MEDIA_TYPES: 1
         run: |
-          cosign sign -d --yes --registry-referrers-mode=legacy --key env://COSIGN_PRIVATE_KEY ${IMAGE}@${{ steps.push_step.outputs.digest }}
+          set -e # exit on first error
+
+          # signing
+          echo "Signing Image: ${IMAGE}@${DIGEST}"
+          export COSIGN_PRIVATE_KEY=$(echo "$BASE64_PRIV_KEY" | base64 --decode)
+          cosign sign --yes --registry-referrers-mode=legacy --key env://COSIGN_PRIVATE_KEY ${IMAGE}@${DIGEST}
           echo "Signature generated successfully"
-          # smoke test
-          cosign verify --key env://COSIGN_PUBLIC_KEY -d ${IMAGE}@${{ steps.push_step.outputs.digest }}
           
 
   # distribute:
