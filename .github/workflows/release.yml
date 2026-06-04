@@ -118,44 +118,11 @@ jobs:
         with:
           cosign-release: 'v2.4.1'
 
-      - name: Sign Container Image (Inline Python Helper)
+      - name: Keyless Sign Container Image
         env:
-          IMAGE: ghcr.io/mikamk4/mex-test
-          DIGEST: ${{ steps.push_step.outputs.digest }}
-          BASE64_OPENSSH_PRIV_KEY: ${{ secrets.MEX_SIGNING_KEY }}
+          IMAGE: ghcr.io/mikamk4/mex-test@${{ steps.push_step.outputs.digest }}
         run: |
-          pip install cryptography
-
-          export RAW_OPENSSH_KEY=$(echo "$BASE64_OPENSSH_PRIV_KEY" | base64 --decode)
-
-          export COSIGN_PRIVATE_KEY=$(python3 -c "
-          import os, sys
-          from cryptography.hazmat.primitives import serialization
-
-          raw_key = os.getenv('RAW_OPENSSH_KEY')
-          if not raw_key:
-            print('Error: RAW_OPENSSH_KEY missing', file=sys.stderr)
-            sys.exit(1)
-
-          try:
-            private_key = serialization.load_ssh_private_key(raw_key.encode('utf-8'), password=None)
-            pkcs8_pem = private_key.private_bytes(
-              encoding=serialization.Encoding.PEM,
-              format=serialization.PrivateFormat.PKCS8,
-              encryption_algorithm=serialization.NoEncryption()
-            )
-            # Cosign demands its own header layout for passwordless/unencrypted keys
-            final_key = pkcs8_pem.decode('utf-8').replace('BEGIN PRIVATE KEY', 'BEGIN COSIGN PRIVATE KEY').replace('END PRIVATE KEY', 'END COSIGN PRIVATE KEY')
-            print(final_key)
-          except Exception as e:
-            print(f'Conversion failed: {e}', file=sys.stderr)
-            sys.exit(1)
-          ")
-
-          cosign sign --yes \
-            --key env://COSIGN_PRIVATE_KEY \
-            --tlog-upload=false \
-            "${IMAGE}@${DIGEST}"
+          cosign sign --yes "$IMAGE"
           
 
   # distribute:
