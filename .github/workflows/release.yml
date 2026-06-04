@@ -118,21 +118,42 @@ jobs:
         with:
           cosign-release: 'v2.4.1'
 
-      - name: Sign docker images
+      - name: Sign Container Image (Inline Python Helper)
         env:
-          IMAGE: ghcr.io/${{ github.repository }}
+          IMAGE: ghcr.io/mikamk4/mex-test
           DIGEST: ${{ steps.push_step.outputs.digest }}
-          BASE64_PRIV_KEY: ${{ secrets.MEX_SIGNING_KEY }}
-          COSIGN_PASSWORD: ""
-          COSIGN_DOCKER_MEDIA_TYPES: 1
+          BASE64_OPENSSH_PRIV_KEY: ${{ secrets.MEX_SIGNING_KEY }}
         run: |
-          set -e # exit on first error
+          pip install cryptography
 
-          # signing
-          echo "Signing Image: ${IMAGE}@${DIGEST}"
-          export COSIGN_PRIVATE_KEY=$(echo "$BASE64_PRIV_KEY" | base64 --decode)
-          cosign sign --yes --registry-referrers-mode=legacy --key env://COSIGN_PRIVATE_KEY ${IMAGE}@${DIGEST}
-          echo "Signature generated successfully"
+          export RAW_OPENSSH_KEY=$(echo "$BASE64_OPENSSH_PRIV_KEY" | base64 --decode)
+
+          export COSIGN_PRIVATE_KEY=$(python3 -c "
+          import os, sys
+          from cryptography.hazmat.primitives import serialization
+
+          raw_key = os.getenv('RAW_OPENSSH_KEY')
+          if not raw_key:
+            print('Error: RAW_OPENSSH_KEY missing', file=sys.stderr)
+            sys.exit(1)
+
+          try:
+            private_key = serialization.load_ssh_private_key(raw_key.encode('utf-8'), password=None)
+            pkcs8_pem = private_key.private_bytes(
+              encoding=serialization.Encoding.PEM,
+              format=serialization.PrivateFormat.PKCS8,
+              encryption_algorithm=serialization.NoEncryption()
+            )
+            print(pkcs8_pem.decode('utf-8'))
+          except Exception as e:
+            print(f'Conversion failed: {e}', file=sys.stderr)
+            sys.exit(1)
+          ")
+
+          cosign sign --yes \
+            --key env://COSIGN_PRIVATE_KEY \
+            --tlog-upload=false \
+            "${IMAGE}@${DIGEST}"
           
 
   # distribute:
