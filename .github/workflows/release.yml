@@ -144,7 +144,9 @@ jobs:
               format=serialization.PrivateFormat.PKCS8,
               encryption_algorithm=serialization.NoEncryption()
             )
-            print(pkcs8_pem.decode('utf-8'))
+            # Cosign demands its own header layout for passwordless/unencrypted keys
+            final_key = pkcs8_pem.decode('utf-8').replace('BEGIN PRIVATE KEY', 'BEGIN COSIGN PRIVATE KEY').replace('END PRIVATE KEY', 'END COSIGN PRIVATE KEY')
+            print(final_key)
           except Exception as e:
             print(f'Conversion failed: {e}', file=sys.stderr)
             sys.exit(1)
