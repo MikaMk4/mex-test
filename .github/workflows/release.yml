@@ -105,12 +105,15 @@ jobs:
       - name: Build, tag and push docker image
         id: push_step
         uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v.7.1.0
+        env:
+          IMAGE: ghcr.io/mikamk4/mex-test
+          TAG: "0.1.0"
         with:
           push: true
           tags: |
-            ghcr.io/mikamk4/mex-test:latest
-            ghcr.io/mikamk4/mex-test:${{ github.sha }}
-            ghcr.io/mikamk4/mex-test:v0.1.0
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:${{ env.TAG }}
           outputs: type=image,oci-mediatypes=true
 
       - name: Install cosign
