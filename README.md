@@ -96,6 +96,14 @@ Images released to GHCR are signed using [cosign](https://github.com/sigstore/co
 To verify an image manually:
 `cosign verify --certificate-identity-regexp "https://github.com/robert-koch-institut/mex-test/.github/workflows/release.yml@refs/heads/main" --certificate-oidc-issuer "https://token.actions.githubusercontent.com" ghcr.io/robert-koch-institut/mex-test:<tag>`
 
+### Python release verification
+
+Python release artifacts (source distributions and wheels) published to GitHub Releases are also signed using [cosign](https://github.com/sigstore/cosign).
+
+To verify a release artifact manually, download the artifact, its certificate (`.crt`), and its signature (`.sig`), then run:
+`cosign verify-blob --certificate <path-to-cert> --signature <path-to-signature> --certificate-identity-regexp "https://github.com/robert-koch-institut/mex-test/.github/workflows/release.yml@refs/heads/main" --certificate-oidc-issuer "https://token.actions.githubusercontent.com" <path-to-artifact>`
+
+
 ## Commands
 
 - run `uv run {command} --help` to print instructions
