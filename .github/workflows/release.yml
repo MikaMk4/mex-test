@@ -86,6 +86,7 @@ jobs:
       contents: read
       packages: write
       id-token: write  # Required for cosign signing
+      id-token: write  # Required for cosign signing
 
     steps:
       - name: Checkout repo
@@ -121,12 +122,40 @@ jobs:
         with:
           cosign-release: 'v2.4.1'
 
+      - name: Sign Docker image keyless
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}@${{ steps.push_step.outputs.digest }}
+        run: |
+          cosign sign --yes "$IMAGE"
+
+  distribute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: release
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+          ref: ${{ needs.release.outputs.tag }}
+          persist-credentials: false
+
+      - name: Cache requirements
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        env:
+          cache-name: cache-requirements
+        with:
+          cosign-release: 'v2.4.1'
+
       - name: Keyless Sign Container Image
         env:
           IMAGE: ghcr.io/mikamk4/mex-test@${{ steps.push_step.outputs.digest }}
         run: |
           cosign sign --yes "$IMAGE"
-          
+
 
   # distribute:
   #   runs-on: ubuntu-latest
