@@ -98,10 +98,27 @@ To verify an image manually:
 
 ### Python release verification
 
-Python release artifacts (source distributions and wheels) published to GitHub Releases are also signed using [cosign](https://github.com/sigstore/cosign).
+Python release artifacts (source distributions and wheels) published to GitHub Releases are signed keyless using [sigstore](https://github.com/sigstore/gh-action-sigstore-python).
 
-To verify a release artifact manually, download the artifact, its certificate (`.crt`), and its signature (`.sig`), then run:
-`cosign verify-blob --certificate <path-to-cert> --signature <path-to-signature> --certificate-identity-regexp "https://github.com/robert-koch-institut/mex-test/.github/workflows/release.yml@refs/heads/main" --certificate-oidc-issuer "https://token.actions.githubusercontent.com" <path-to-artifact>`
+To verify a release artifact manually, download the artifact (e.g. `foo.whl`) and its Sigstore bundle (`foo.whl.sigstore.json`), then run either:
+
+**Using `sigstore`** (requires `pip install sigstore`):
+```bash
+sigstore verify identity \
+  --bundle <path-to-bundle> \
+  --cert-identity "https://github.com/robert-koch-institut/mex-test/.github/workflows/release.yml@refs/heads/main" \
+  --cert-oidc-issuer "https://token.actions.githubusercontent.com" \
+  <path-to-artifact>
+```
+
+**Using `cosign`**:
+```bash
+cosign verify-blob \
+  --bundle <path-to-bundle> \
+  --certificate-identity-regexp "https://github.com/robert-koch-institut/mex-test/.github/workflows/release.yml@refs/heads/main" \
+  --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+  <path-to-artifact>
+```
 
 
 ## Commands
