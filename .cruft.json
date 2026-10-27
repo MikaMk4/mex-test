@@ -1,14 +1,18 @@
 {
   "template": "/home/yaldizm/mex/mex-template",
-  "commit": "0d8c4782a38f66faeaa24cc853c191cc624a9dff",
+  "commit": "d19032fb3bb334de798b628dbec5fbbbd8e0b00e",
   "checkout": null,
   "context": {
     "cookiecutter": {
       "project_name": "test",
       "short_summary": "Test Repo",
       "long_summary": "Explain your project in a bit more detail, 50-100 words would be ideal. Line-breaks are not needed as the text will be auto-wrapped.",
+      "containerize": true,
+      "publish_to_pypi": true,
+      "python_version_min": "3.11",
+      "python_version_max": "3.15",
       "_template": "/home/yaldizm/mex/mex-template",
-      "_commit": "0d8c4782a38f66faeaa24cc853c191cc624a9dff"
+      "_commit": "d19032fb3bb334de798b628dbec5fbbbd8e0b00e"
     }
   },
   "directory": null

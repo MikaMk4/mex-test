@@ -4,8 +4,6 @@ services:
       context: .
     ports:
       - 8080:8080
-    environment:
-      - MEX_TEST_HOST=0.0.0.0
     healthcheck:
       test: [ "CMD", "curl", "http://0.0.0.0:8080/_system/check" ]
       interval: 60s
@@ -13,5 +11,15 @@ services:
       retries: 5
     volumes:
       - data:/app/data
+  # replace this placeholder with the services your test suite depends on,
+  # e.g. a database or a mock server, and start them from the testing workflow
+  placeholder:
+    image: alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+    command: [ "sleep", "infinity" ]
+    healthcheck:
+      test: [ "CMD", "true" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
 volumes:
   data:

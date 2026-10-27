@@ -1,6 +1,6 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
 
-FROM python:3.14 AS builder
+FROM python:3.15 AS builder
 
 WORKDIR /build
 
@@ -14,7 +14,7 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 RUN uv export --no-dev --no-editable | uv pip install --system --no-deps -r -
 
-FROM python:3.14-slim
+FROM python:3.15-slim
 
 LABEL org.opencontainers.image.authors="mex@rki.de"
 LABEL org.opencontainers.image.description="Test Repo"
@@ -25,11 +25,9 @@ LABEL org.opencontainers.image.vendor="mikamk4"
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONOPTIMIZE=1
 
-ENV MEX_TEST_HOST=0.0.0.0
-
 WORKDIR /app
 
-COPY --from=builder /usr/local/lib/python3.14/site-packages /usr/local/lib/python3.14/site-packages
+COPY --from=builder /usr/local/lib/python3.15/site-packages /usr/local/lib/python3.15/site-packages
 COPY --from=builder /usr/local/bin/test /usr/local/bin/test
 
 USER 10001

@@ -98,11 +98,11 @@ To verify an image manually:
 
 ### Python release verification
 
-Python release artifacts (source distributions and wheels) published to GitHub Releases are signed keyless using [sigstore](https://github.com/sigstore/gh-action-sigstore-python).
+Python release artifacts (source distributions and wheels) published to GitHub Releases are signed keyless using [sigstore](https://github.com/sigstore/sigstore-python).
 
-To verify a release artifact manually, download the artifact (e.g. `foo.whl`) and its Sigstore bundle (`foo.whl.sigstore.json`), then run either:
+To verify a release artifact manually, download the artifact (e.g. `mex_test-<tag>-py3-none-any.whl`) and its Sigstore bundle (`mex_test-<tag>-py3-none-any.whl.sigstore.json`), then run either:
 
-**Using `sigstore`** (requires `pip install sigstore`):
+**Using `sigstore`**:
 ```bash
 sigstore verify identity \
   --bundle <path-to-bundle> \
@@ -115,11 +115,10 @@ sigstore verify identity \
 ```bash
 cosign verify-blob \
   --bundle <path-to-bundle> \
-  --certificate-identity-regexp "https://github.com/robert-koch-institut/mex-test/.github/workflows/release.yml@refs/heads/main" \
+  --certificate-identity "https://github.com/robert-koch-institut/mex-test/.github/workflows/release.yml@refs/heads/main" \
   --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
   <path-to-artifact>
 ```
-
 
 ## Commands
 
