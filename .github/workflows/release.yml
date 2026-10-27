@@ -106,7 +106,7 @@ jobs:
         id: push_step
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         env:
-          IMAGE: ghcr.io/${{ github.repository }}
+          IMAGE: ghcr.io/mikamk4/mex-test
         with:
           context: .
           push: true
@@ -127,7 +127,7 @@ jobs:
 
       - name: Apply release tags
         env:
-          IMAGE: ghcr.io/${{ github.repository }}
+          IMAGE: ghcr.io/mikamk4/mex-test
           TAG: ${{ needs.release.outputs.tag }}
           DIGEST: ${{ steps.push_step.outputs.digest }}
         run: |
